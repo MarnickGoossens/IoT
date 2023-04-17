@@ -3,13 +3,6 @@ import wiringpi
 import sys
 
 
-def setup():
-    print("Start")
-    pin = 2
-    wiringpi.wiringPiSetup()
-    wiringpi.pinMode(pin, 1)
-
-
 def blink(pin):
     wiringpi.digitalWrite(pin, 1)
     time.sleep(0.5)
@@ -17,12 +10,12 @@ def blink(pin):
     time.sleep(0.5)
 
 
-def main():
-    for _ in range(0, 10):
-        blink(pin)
+print("Start")
+pin = 2
+wiringpi.wiringPiSetup()
+wiringpi.pinMode(pin, 1)
 
-
-setup()
-main()
+for _ in range(10):
+    blink(pin)
 
 print("Done")
