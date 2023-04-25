@@ -15,6 +15,7 @@ def DeactivateLCD():
     time.sleep(0.000005)
 
 
+# setup lcd
 PIN_OUT = {
     "SCLK": 14,
     "DIN": 11,
@@ -24,11 +25,17 @@ PIN_OUT = {
     "LED": 6,  # backlight
 }
 
-# IN THIS CODE WE USE W13 (PIN 22) AS CHIP SELECT
+counter = 1
+buttonState = 0
+lastButtonState = 0
+buttonPin = 1
+ledpin = 15
 pin_CS_lcd = 13
 wiringpi.wiringPiSetup()
 wiringpi.wiringPiSPISetupMode(1, 0, 400000, 0)  # (channel, port, speed, mode)
 wiringpi.pinMode(pin_CS_lcd, 1)  # Set pin to mode 1 ( OUTPUT )
+wiringpi.pinMode(buttonPin, 0)
+wiringpi.pinMode(ledpin, 1)
 ActivateLCD()
 lcd_1 = LCD(PIN_OUT)
 
@@ -44,8 +51,20 @@ try:
         lcd_1.put_string(datetime.now().strftime("%H:%M:%S"))
         lcd_1.refresh()
         DeactivateLCD()
-        time.sleep(1)
+        buttonState = wiringpi.digitalRead(buttonPin)
+        if buttonState != lastButtonState:
+            if buttonState == True:
+                counter += 1
+        else:
+            time.sleep(0.05)
+        lastButtonState = buttonState
+
+        if counter % 2 == 0:
+            wiringpi.digitalWrite(ledpin, 1)
+        else:
+            wiringpi.digitalWrite(ledpin, 0)
 except KeyboardInterrupt:
+    wiringpi.digitalWrite(ledpin, 0)
     lcd_1.clear()
     lcd_1.refresh()
     DeactivateLCD()
