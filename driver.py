@@ -11,7 +11,7 @@ def blink(pin):
 
 
 print("Start")
-pin = 2
+pin = 8
 wiringpi.wiringPiSetup()
 wiringpi.pinMode(pin, 1)
 
