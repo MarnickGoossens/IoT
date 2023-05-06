@@ -2,7 +2,7 @@ import wiringpi
 import time
 
 # setup
-buttonPin = 1
+buttonPin = 0
 wiringpi.wiringPiSetup()
 wiringpi.pinMode(buttonPin, 0)
 

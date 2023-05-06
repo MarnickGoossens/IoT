@@ -98,15 +98,15 @@ def wave_drive():
 
 # setup
 stopTijd = 0.01
-coil1 = 3
-coil2 = 4
-coil3 = 6
-coil4 = 8
+moterCoil1 = 3
+moterCoil2 = 4
+moterCoil3 = 6
+moterCoil4 = 8
 wiringpi.wiringPiSetup()
-wiringpi.pinMode(coil1, 1)
-wiringpi.pinMode(coil2, 1)
-wiringpi.pinMode(coil3, 1)
-wiringpi.pinMode(coil4, 1)
+wiringpi.pinMode(moterCoil1, 1)
+wiringpi.pinMode(moterCoil2, 1)
+wiringpi.pinMode(moterCoil3, 1)
+wiringpi.pinMode(moterCoil4, 1)
 
 
 # loop

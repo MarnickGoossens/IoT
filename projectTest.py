@@ -9,6 +9,7 @@ from datetime import datetime
 from time import sleep, time
 from ch7_ClassLCD import LCD
 import spidev
+import threading
 
 
 # Functies
@@ -83,7 +84,7 @@ def ActivateLCD():
     sleep(0.000005)
 
 
-def updateLCD():
+def updateLCD(trapped, trapCounter):
     lcd1.clear()
     lcd1.go_to_xy(0, 0)
     lcd1.put_string(datetime.now().strftime("%d/%m/%Y"))
@@ -102,6 +103,36 @@ def updateLCD():
 def DeactivateLCD():
     digitalWrite(pinCsLCD, 1)  # Deactived LCD using CS
     sleep(0.000005)
+
+
+def main(trapped, timeTrapped, trapCounter):
+    try:
+        while True:
+            while not trapped:
+                if digitalRead(buttonPin2) == True:
+                    full_step(coil1, coil2, coil3, coil4)
+
+                ultrasoneAfstand = ultrasone(
+                    trg, echo, ultrasoneStartTime, ultrasoneStopTime
+                )
+                if ultrasoneAfstand < 10:
+                    trapped = True
+                    trapCounter += 1
+                    timeTrapped = time()
+                    digitalWrite(ledpin, True)
+
+            while timeTrapped + 5 > time():
+                full_step(coil1, coil2, coil3, coil4)
+
+            if digitalRead(buttonPin1) == True:
+                trapped = False
+                moterReset(coil1, coil2, coil3, coil4)
+                digitalWrite(ledpin, False)
+
+    except KeyboardInterrupt:
+        lcd1.clear()
+        lcd1.refresh()
+        DeactivateLCD()
 
 
 # Variabele
@@ -148,33 +179,9 @@ ActivateLCD()
 lcd1 = LCD(pinOutLCD)
 lcd1.clear()
 
-try:
-    while True:
-        updateLCD()
-        while not trapped:
-            updateLCD()
-            if digitalRead(buttonPin2) == True:
-                full_step(coil1, coil2, coil3, coil4)
 
-            ultrasoneAfstand = ultrasone(
-                trg, echo, ultrasoneStartTime, ultrasoneStopTime
-            )
-            if ultrasoneAfstand < 10:
-                trapped = True
-                trapCounter += 1
-                timeTrapped = time()
-                digitalWrite(ledpin, True)
+t1 = threading.Thread(target=updateLCD, args=(trapped, trapCounter))
+t2 = threading.Thread(target=main, args=(trapped, timeTrapped, trapCounter))
 
-        while timeTrapped + 5 > time():
-            updateLCD()
-            full_step(coil1, coil2, coil3, coil4)
-
-        if digitalRead(buttonPin1) == True:
-            trapped = False
-            moterReset(coil1, coil2, coil3, coil4)
-            digitalWrite(ledpin, False)
-
-except KeyboardInterrupt:
-    lcd1.clear()
-    lcd1.refresh()
-    DeactivateLCD()
+t2.start()
+t1.start()
