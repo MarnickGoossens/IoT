@@ -222,7 +222,7 @@ try:
         while timeTrapped + 5 > time():
             full_step(coil1, coil2, coil3, coil4)
 
-        # De reset knop die dient om het ledje uit te schakelen en de trap terug te activeren
+        # De reset knop die dient om het ledje uit te schakelen, de trap terug te activeren, de motor te resetten en de status van de trap up te loaden naar ubeac
         if digitalRead(buttonPin1) == True:
             trapped = False
             uploadData(url, uid, trapped, trapCounter)
